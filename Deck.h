@@ -16,11 +16,13 @@ class Deck {
         void printCard(const Card& card);
         void printDeck();
         int size();
+
+        bool isEmpty();
         void shuffle();
         Card dealCard();
         void deckRefresh();
-        Card
 
     private:
         vector<Card> cards;
+        vector<Card> discard;
 };

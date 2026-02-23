@@ -17,8 +17,11 @@ void Pyramid::mainMenu() {
     cin >> c;
     if (c == 'N' || c == 'n') {
         newGame();
-    } else {
+    } else if (c == 'Q' || c == 'q') {
         return;
+    } else {
+        cout << "Invalid selection. Please try again!" << endl;
+        mainMenu();
     }
 }
 
@@ -58,13 +61,34 @@ void Pyramid::newGame() {
             }
         }
     }
+    vector<Card> pile;
+    vector<Card> discard;
+    Card currentCard;
+    while (!isEmpty()) {
+
+        currentCard = dealCard();
+    }
     printBoard();
     currentPlay();
 }
 
 void Pyramid::currentPlay() {
-    int i = 1;
+    int round = 1;
+
    while (size() - i != -1) {
+
+    }
+
+
+
+
+    if (round > 3) {
+        cout << "GAME OVER" << endl;
+        cout << "Better luck next time!!!\n" << endl;
+        mainMenu();
+    }
+
+    if (cards.isEmpty() && discard.isEmpty()) {
 
     }
 }

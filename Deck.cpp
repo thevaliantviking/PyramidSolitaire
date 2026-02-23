@@ -41,6 +41,10 @@ int Deck::size() {
     return cards.size();
 };
 
+bool Deck::isEmpty() {
+    return cards.empty();
+}
+
 void Deck::shuffle() {
     random_device rd;
     mt19937 gen(rd());
