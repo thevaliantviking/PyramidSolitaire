@@ -90,12 +90,12 @@ void Pyramid::printBoard() {
     
     // Print pyramid with proper spacing
     for (int i = 0; i < 7; i++) {
-        // Add leading spaces for centering
+        cout << (i+1) << "\t";
+        // spacing to center
         for (int space = 0; space < (7 - i - 1) * 2; space++) {
             cout << " ";
         }
-        
-        // Print cards in this row
+
         for (int j = 0; j <= i; j++) {
             if (board[i][j].rank == 0) {
                 cout << "    ";
@@ -134,8 +134,7 @@ void Pyramid::newGame() {
     while (!isEmpty()) {
         addToStock(dealCard());
     }
-    
-    //printBoard();
+
     currentPlay();
 }
 
@@ -157,7 +156,10 @@ bool Pyramid::isExposed(int row, int col) {
 }
 
 bool Pyramid::makeMove(int r1, int c1, int r2, int c2) {
-    // Validate positions
+    --r1;
+    --c1;
+    --r2;
+    --c2;
     if (r1 < 0 || r1 >= 7 || c1 < 0 || c1 >= 7 ||
         r2 < 0 || r2 >= 7 || c2 < 0 || c2 >= 7) {
         return false;
@@ -183,6 +185,8 @@ bool Pyramid::makeMove(int r1, int c1, int r2, int c2) {
 }
 
 bool Pyramid::removeKing(int r, int c) {
+    --r;
+    --c;
     if (r < 0 || r >= 7 || c < 0 || c >= 7) {
         return false;
     }
@@ -327,9 +331,7 @@ void Pyramid::currentPlay() {
             if (!hasDrawnCard) {
                 cout << "No card drawn from stock!" << endl;
             } else if (currentCard.rank == 13) {
-                cout << "King removed from stock! [";
-                printCard(currentCard);
-                cout << "]" << endl;
+                cout << "King removed!" << endl;
                 hasDrawnCard = false;
                 currentCard.rank = 0;
             } else {
@@ -341,7 +343,8 @@ void Pyramid::currentPlay() {
             } else {
                 int r, c;
                 cin >> r >> c;
-                
+                --r;
+                --c;
                 if (r < 0 || r >= 7 || c < 0 || c >= 7) {
                     cout << "Invalid position!" << endl;
                 } else if (!isExposed(r, c)) {

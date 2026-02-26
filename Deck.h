@@ -9,12 +9,15 @@ struct Card {
     int rank;
 };
 
-// Node structure for linked list
+// Node for link list
 struct CardNode {
     Card data;
     CardNode* next;
     
-    CardNode(Card c) : data(c), next(nullptr) {}
+    CardNode(Card c) {
+        data = c;
+        next = nullptr;
+    }
 };
 
 class Deck {
@@ -33,10 +36,8 @@ public:
     
 private:
     CardNode* head;     // Head of linked list
-    CardNode* tail;     // Tail for efficient adding
     int deckSize;       // Track size
     
     // Helper functions
     void clearDeck();
-    CardNode* getNodeAt(int index);
 };
