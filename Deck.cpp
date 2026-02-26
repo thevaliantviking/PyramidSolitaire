@@ -8,7 +8,9 @@ using namespace std;
 const string SUIT[] = {"♥", "♦", "♧", "♤"};
 const int RANK[] = {1,2,3,4,5,6,7,8,9,10,11,12,13};
 
-Deck::Deck() : head(nullptr), tail(nullptr), deckSize(0) {
+Deck::Deck() {
+    head = nullptr;
+    deckSize = 0;
     // Create all 52 cards and add to linked list
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 13; j++) {
@@ -32,22 +34,14 @@ void Deck::clearDeck() {
         current = next;
     }
     head = nullptr;
-    tail = nullptr;
     deckSize = 0;
 }
 
 void Deck::addCard(Card card) {
     CardNode* newNode = new CardNode(card);
-    
-    if (head == nullptr) {
-        // Empty list
-        head = newNode;
-        tail = newNode;
-    } else {
-        // Add to end
-        tail->next = newNode;
-        tail = newNode;
-    }
+
+    newNode->next = head;
+    head = newNode;
     deckSize++;
 }
 
@@ -79,18 +73,6 @@ int Deck::size() {
 
 bool Deck::isEmpty() {
     return head == nullptr;
-}
-
-CardNode* Deck::getNodeAt(int index) {
-    if (index < 0 || index >= deckSize) {
-        return nullptr;
-    }
-    
-    CardNode* current = head;
-    for (int i = 0; i < index; i++) {
-        current = current->next;
-    }
-    return current;
 }
 
 void Deck::shuffle() {
@@ -127,27 +109,10 @@ Card Deck::dealCard() {
         return empty;
     }
     
-    // Remove from end (tail)
-    if (head == tail) {
-        // Only one card
-        Card card = head->data;
-        delete head;
-        head = nullptr;
-        tail = nullptr;
-        deckSize--;
-        return card;
-    }
-    
-    // Find second-to-last node
-    CardNode* current = head;
-    while (current->next != tail) {
-        current = current->next;
-    }
-    
-    Card card = tail->data;
-    delete tail;
-    tail = current;
-    tail->next = nullptr;
+    CardNode* temp = head;
+    Card card = head->data;
+    head = head->next;
+    delete temp;
     deckSize--;
     
     return card;
