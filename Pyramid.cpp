@@ -202,21 +202,6 @@ bool Pyramid::removeKing(int r, int c) {
     }
 }
 
-bool Pyramid::removeKing() {
-    if (!hasDrawnCard) {
-        cout << "No card drawn from stock!" << endl;
-        return false;
-    }
-    if (currentCard.rank == 13) {
-        cout << "King removed!" << endl;
-        currentCard.rank = 0;
-        return true;
-    } else {
-        cout << "That's not a King!" << endl;
-        return false;
-    }
-}
-
 bool Pyramid::hasValidMoves() {
     // Check if any valid moves exist in pyramid
     for (int i = 0; i < 7; i++) {
@@ -286,7 +271,8 @@ void Pyramid::currentPlay() {
             }
             if (!pyramidClear) break;
         }
-        
+
+        //Won
         if (pyramidClear) {
             cout << "\n*** CONGRATULATIONS! YOU WIN! ***" << endl;
             cout << "You've cleared the pyramid!\n" << endl;
@@ -294,7 +280,7 @@ void Pyramid::currentPlay() {
             return;
         }
         
-        // Check loss condition
+        // Lost
         if (stockSize == 0 && !hasDrawnCard && !hasValidMoves()) {
             cout << "\n*** GAME OVER ***" << endl;
             cout << "No more moves available!\n" << endl;
@@ -305,6 +291,7 @@ void Pyramid::currentPlay() {
         cout << "\nCommands:" << endl;
         cout << "  p <row1> <col1> <row2> <col2> - Remove pair" << endl;
         cout << "  k <row> <col> - Remove King" << endl;
+        cout << "  s - Remove king from current stock card" << endl;
         cout << "  m <row> <col> - Match with current stock card" << endl;
         cout << "  d - Draw from stock" << endl;
         cout << "  n - Discard current card and draw new" << endl;
@@ -334,12 +321,19 @@ void Pyramid::currentPlay() {
             makeMove(r1, c1, r2, c2);
         } else if (command == 'k' || command == 'K') {
             int r, c;
-            if (cin >> r >> c) {
-                removeKing(r, c);
+            cin >> r >> c;
+            removeKing(r, c);
+        } else if (command == 's' || command == 'S') {
+            if (!hasDrawnCard) {
+                cout << "No card drawn from stock!" << endl;
+            } else if (currentCard.rank == 13) {
+                cout << "King removed from stock! [";
+                printCard(currentCard);
+                cout << "]" << endl;
+                hasDrawnCard = false;
+                currentCard.rank = 0;
             } else {
-                cin.clear();
-                cin.ignore(10000,'\n');
-                removeKing();
+                cout << "Current stock card is not a King!" << endl;
             }
         } else if (command == 'm' || command == 'M') {
             if (!hasDrawnCard) {

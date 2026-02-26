@@ -12,7 +12,6 @@ public:
     bool isExposed(int row, int col);
     bool makeMove(int r1, int c1, int r2, int c2);
     bool removeKing(int r, int c);
-    bool removeKing();
     bool hasValidMoves();
     void drawFromStock();
 
