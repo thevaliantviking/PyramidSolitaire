@@ -165,9 +165,14 @@ void Pyramid::newGame() {
     cout << "\n______________________________________________" << endl;
     cout << "\t\t  CONQUER THE PYRAMID!!!\n";
     cout << "______________________________________________\n" << endl;
-
-    dealPyramid();
-    logAction("Pyramid dealt - 28 cards placed");
+    if (!isEmpty()) {
+        dealPyramid();
+        logAction("Pyramid dealt - 28 cards placed");
+    } else {
+        cout << "There are no cards in your deck!" << endl;
+        logAction("Pyramid not dealt - Deck Empty");
+        mainMenu();
+    }
     
     //add remaining cards to stock pile
     while (!isEmpty()) {
