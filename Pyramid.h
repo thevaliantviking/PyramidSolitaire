@@ -1,10 +1,12 @@
 #pragma once
 #include "Card.h"
 #include "Deck.h"
+#include <fstream>
 
 class Pyramid : public Deck {
 public:
     Pyramid();
+    ~Pyramid();
     void mainMenu();
     void printBoard();
     void clearBoard();
@@ -17,13 +19,15 @@ public:
     void drawFromStock();
 
 private:
-    Card board[7][7];  // 7 rows for pyramid (1+2+3+4+5+6+7 = 28 cards)
+    Card board[7][7];
     CardNode* stockPile;   // Stock pile as linked list
     Card currentCard;      // Current card drawn from stock
     bool hasDrawnCard;     // test if card is currently drawn
     int stockSize;
+    std::ofstream logFile;
 
     void dealPyramid();
     void addToStock(Card card);
     Card drawFromStockList();
+    void logAction(const std::string& action);
 };

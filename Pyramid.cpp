@@ -7,6 +7,26 @@ Pyramid::Pyramid() {
     hasDrawnCard = false;
     stockSize = 0;
     clearBoard();
+
+    //open the logfile
+    logFile.open("csc375Solitaire.txt");
+    if (logFile.is_open()) {
+        logFile << "=== Pyramid Solitaire Game Started ===" << endl;
+    }
+}
+
+Pyramid::~Pyramid() {
+    if (logFile.is_open()) {
+        logFile << "=== Game Ended ===" << endl;
+        logFile.close();
+    }
+}
+
+void Pyramid::logAction(const string& action) {
+    if (logFile.is_open()) {
+        logFile << action << endl;
+        logFile.flush();
+    }
 }
 
 void Pyramid::mainMenu() {
@@ -21,11 +41,17 @@ void Pyramid::mainMenu() {
     cout << "\nPlease make a selection: ";
     cin >> c;
     if (c == 'N' || c == 'n') {
+        logAction("User selected: New Game");
         newGame();
     } else if (c == 'D' || c == 'd') {
+        logAction("User selected: Print Deck");
+        if (isEmpty()) {
+            deckRefresh();
+        }
         printDeck();
         mainMenu();
     } else if (c == 'S' || c == 's') {
+        logAction("User selected: Shuffle");
         shuffle();
         cout << "Current deck shuffled. To view enter 'd'." << endl;
         mainMenu();
@@ -128,6 +154,7 @@ void Pyramid::printBoard() {
 }
 
 void Pyramid::newGame() {
+    logAction("\n--- NEW GAME STARTED ---");
     deckRefresh();
     clearBoard();
     
@@ -136,26 +163,32 @@ void Pyramid::newGame() {
     cout << "______________________________________________\n" << endl;
 
     dealPyramid();
+    logAction("Pyramid dealt - 28 cards placed");
     
-    //Cards to stock pile
+    //add remaining cards to stock pile
     while (!isEmpty()) {
         addToStock(dealCard());
     }
+
+    logAction("Stock pile created with " + to_string(stockSize) + " cards");
 
     currentPlay();
 }
 
 bool Pyramid::isExposed(int row, int col) {
-    // Check if card is exposed (no cards covering it)
+    //check if card is exposed
+
+    // no card
     if (board[row][col].rank == 0) {
-        return false;  // No card there
+        return false;
     }
-    
+
+    //bottom row always exposed
     if (row == 6) {
-        return true;  // Bottom row always exposed
+        return true;
     }
     
-    // Check if both children are removed
+    //children check for exposed card
     bool leftChildGone = (board[row + 1][col].rank == 0);
     bool rightChildGone = (board[row + 1][col + 1].rank == 0);
     
@@ -169,12 +202,14 @@ bool Pyramid::makeMove(int r1, int c1, int r2, int c2) {
     --c2;
     if (r1 < 0 || r1 >= 7 || c1 < 0 || c1 >= 7 ||
         r2 < 0 || r2 >= 7 || c2 < 0 || c2 >= 7) {
+        logAction("INVALID MOVE: Position out of bounds");
         return false;
     }
     
     // Check if cards exist and are exposed
     if (!isExposed(r1, c1) || !isExposed(r2, c2)) {
         cout << "One or both cards are not exposed!" << endl;
+        logAction("INVALID MOVE: Card(s) not exposed");
         return false;
     }
     
@@ -182,11 +217,15 @@ bool Pyramid::makeMove(int r1, int c1, int r2, int c2) {
     int sum = board[r1][c1].rank + board[r2][c2].rank;
     if (sum == 13) {
         cout << "Match! Removing cards." << endl;
+        logAction("SUCCESSFUL MOVE: Removed pair at (" + to_string(r1+1) + "," +
+                  to_string(c1+1) + ") and (" + to_string(r2+1) + "," +
+                  to_string(c2+1) + ") - Sum = 13");
         board[r1][c1].rank = 0;
         board[r2][c2].rank = 0;
         return true;
     } else {
         cout << "Cards don't add up to 13 (sum = " << sum << ")." << endl;
+        logAction("INVALID MOVE: Sum = " + to_string(sum) + " (not 13)");
         return false;
     }
 }
@@ -195,20 +234,24 @@ bool Pyramid::removeKing(int r, int c) {
     --r;
     --c;
     if (r < 0 || r >= 7 || c < 0 || c >= 7) {
+        logAction("INVALID: King removal out of bounds");
         return false;
     }
     
     if (!isExposed(r, c)) {
         cout << "Card is not exposed!" << endl;
+        logAction("INVALID: King at (" + to_string(r+1) + "," + to_string(c+1) + ") not exposed");
         return false;
     }
     
     if (board[r][c].rank == 13) {
         cout << "King removed!" << endl;
+        logAction("SUCCESS: King removed at (" + to_string(r+1) + "," + to_string(c+1) + ")");
         board[r][c].rank = 0;
         return true;
     } else {
         cout << "That's not a King!" << endl;
+        logAction("INVALID: Card at (" + to_string(r+1) + "," + to_string(c+1) + ") is not a King");
         return false;
     }
 }
@@ -250,11 +293,13 @@ bool Pyramid::hasValidMoves() {
 void Pyramid::drawFromStock() {
     if (stockSize == 0) {
         cout << "Stock pile is empty!" << endl;
+        logAction("DRAW FAILED: Stock pile empty");
         return;
     }
     
     if (hasDrawnCard) {
-        cout << "You already have a card drawn. Use it or pass your turn first." << endl;
+        cout << "You already have a card drawn. Use it or Discard and draw" << endl;
+        logAction("DRAW FAILED: Card already drawn");
         return;
     }
     
@@ -263,6 +308,8 @@ void Pyramid::drawFromStock() {
     cout << "Drew: ";
     printCard(currentCard);
     cout << endl;
+    logAction("DRAW: Card drawn from stock (Rank: " + to_string(currentCard.rank) +
+              ", Stock remaining: " + to_string(stockSize) + ")");
 }
 
 void Pyramid::currentPlay() {
@@ -287,6 +334,7 @@ void Pyramid::currentPlay() {
         if (pyramidClear) {
             cout << "\n*** CONGRATULATIONS! YOU WIN! ***" << endl;
             cout << "You've cleared the pyramid!\n" << endl;
+            logAction("\n*** GAME WON! Pyramid cleared! ***");
             mainMenu();
             return;
         }
@@ -295,6 +343,7 @@ void Pyramid::currentPlay() {
         if (stockSize == 0 && !hasDrawnCard && !hasValidMoves()) {
             cout << "\n*** GAME OVER ***" << endl;
             cout << "No more moves available!\n" << endl;
+            logAction("\n*** GAME LOST! No more valid moves! ***");
             mainMenu();
             return;
         }

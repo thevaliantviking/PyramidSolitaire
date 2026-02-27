@@ -119,7 +119,7 @@ Card Deck::dealCard() {
 void Deck::deckRefresh() {
     clearDeck();
     
-    // Recreate deck
+    //recreate deck
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 13; j++) {
             Card card;
