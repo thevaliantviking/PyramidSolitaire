@@ -7,4 +7,6 @@ add_executable(Solitaire main.cpp
         Deck.h
         Deck.cpp
         Pyramid.h
-        Pyramid.cpp)
+        Pyramid.cpp
+        Card.h
+)

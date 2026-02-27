@@ -1,29 +1,11 @@
 #pragma once
 
-#include <string>
-
-using namespace std;
-
-struct Card {
-    string suit;
-    int rank;
-};
-
-// Node for link list
-struct CardNode {
-    Card data;
-    CardNode* next;
-    
-    CardNode(Card c) {
-        data = c;
-        next = nullptr;
-    }
-};
+#include "Card.h"
 
 class Deck {
 public:
     Deck();
-    ~Deck();  // Destructor to clean up linked list
+    ~Deck();
     
     void printCard(const Card& card);
     void printDeck();
@@ -32,12 +14,11 @@ public:
     void shuffle();
     Card dealCard();
     void deckRefresh();
-    void addCard(Card card);  // Add card to end of deck
+    void addCard(Card card);
     
 private:
-    CardNode* head;     // Head of linked list
-    int deckSize;       // Track size
-    
-    // Helper functions
+    CardNode* head;
+    int deckSize;
+
     void clearDeck();
 };

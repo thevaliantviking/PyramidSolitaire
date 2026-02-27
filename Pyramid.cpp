@@ -14,12 +14,21 @@ void Pyramid::mainMenu() {
     cout << "\n\t\tWelcome to the Pyramid!" << endl;
     cout << "\tA Game of Patience (solitaire)" << endl;
     cout << "______________________________________" << endl;
-    cout << "To start a new game enter 'n' or 'N'" << endl;
-    cout << "To quit game enter 'q' or 'Q'" << endl;
+    cout << "To start a new game enter 'n'" << endl;
+    cout << "To print current deck enter 'd'" << endl;
+    cout << "To shuffle current deck enter 's'" << endl;
+    cout << "To quit game enter 'q'" << endl;
     cout << "\nPlease make a selection: ";
     cin >> c;
     if (c == 'N' || c == 'n') {
         newGame();
+    } else if (c == 'D' || c == 'd') {
+        printDeck();
+        mainMenu();
+    } else if (c == 'S' || c == 's') {
+        shuffle();
+        cout << "Current deck shuffled. To view enter 'd'." << endl;
+        mainMenu();
     } else if (c == 'Q' || c == 'q') {
         return;
     } else {
@@ -100,9 +109,7 @@ void Pyramid::printBoard() {
             if (board[i][j].rank == 0) {
                 cout << "    ";
             } else {
-                cout << "[";
                 printCard(board[i][j]);
-                cout << "]";
             }
         }
         cout << endl;
@@ -111,9 +118,9 @@ void Pyramid::printBoard() {
     cout << "\nStock pile: " << stockSize << " cards remaining" << endl;
     
     if (hasDrawnCard) {
-        cout << "Current card: [";
+        cout << "Current card: ";
         printCard(currentCard);
-        cout << "]" << endl;
+        cout << endl;
     } else {
         cout << "Current card: (none - press 'd' to draw)" << endl;
     }
@@ -253,9 +260,9 @@ void Pyramid::drawFromStock() {
     
     currentCard = drawFromStockList();
     hasDrawnCard = true;
-    cout << "Drew: [";
+    cout << "Drew: ";
     printCard(currentCard);
-    cout << "]" << endl;
+    cout << endl;
 }
 
 void Pyramid::currentPlay() {
@@ -312,9 +319,9 @@ void Pyramid::currentPlay() {
             drawFromStock();
         } else if (command == 'n' || command == 'N') {
             if (hasDrawnCard) {
-                cout << "Discarded [";
+                cout << "Discarded ";
                 printCard(currentCard);
-                cout << "]" << endl;
+                cout << endl;
                 hasDrawnCard = false;
                 currentCard.rank = 0;
             }

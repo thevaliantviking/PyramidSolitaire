@@ -3,9 +3,7 @@
 #include <random>
 #include <vector>
 
-using namespace std;
-
-const string SUIT[] = {"♥", "♦", "♧", "♤"};
+const std::string SUIT[] = {"♥", "♦", "♧", "♤"};
 const int RANK[] = {1,2,3,4,5,6,7,8,9,10,11,12,13};
 
 Deck::Deck() {
@@ -46,25 +44,25 @@ void Deck::addCard(Card card) {
 }
 
 void Deck::printCard(const Card &card) {
+    std::cout <<'[';
     switch (card.rank) {
-        case 1: cout << " A"; break;
-        case 10: cout << "10"; break;
-        case 11: cout << " J"; break;
-        case 12: cout << " Q"; break;
-        case 13: cout << " K"; break;
-        default: cout << " " << card.rank; break;
+        case 1: std::cout << " A"; break;
+        case 10: std::cout << "10"; break;
+        case 11: std::cout << " J"; break;
+        case 12: std::cout << " Q"; break;
+        case 13: std::cout << " K"; break;
+        default: std::cout << " " << card.rank; break;
     }
-    cout << card.suit;
+    std::cout << card.suit << ']';
 }
 
 void Deck::printDeck() {
     CardNode* current = head;
     while (current != nullptr) {
         printCard(current->data);
-        cout << " ";
         current = current->next;
     }
-    cout << endl;
+    std::cout << std::endl;
 }
 
 int Deck::size() {
@@ -78,23 +76,23 @@ bool Deck::isEmpty() {
 void Deck::shuffle() {
     if (deckSize <= 1) return;
     
-    // Convert linked list to vector for shuffling
-    vector<Card> tempCards;
+    //convert linked list to vector for shuffling
+    std::vector<Card> tempCards;
     CardNode* current = head;
     while (current != nullptr) {
         tempCards.push_back(current->data);
         current = current->next;
     }
 
-    random_device rd;
-    mt19937 gen(rd());
+    std::random_device rd;
+    std::mt19937 gen(rd());
     
     for (int i = tempCards.size() - 1; i > 0; i--) {
         int j = gen() % (i + 1);
-        swap(tempCards[i], tempCards[j]);
+        std::swap(tempCards[i], tempCards[j]);
     }
     
-    // rebuild linked list with shuffled cards
+    // rebuild linked list
     clearDeck();
     for (const Card& card : tempCards) {
         addCard(card);
