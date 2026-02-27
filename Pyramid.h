@@ -17,6 +17,7 @@ public:
     bool removeKing(int r, int c);
     bool hasValidMoves();
     void drawFromStock();
+    void help();
 
 private:
     Card board[7][7];

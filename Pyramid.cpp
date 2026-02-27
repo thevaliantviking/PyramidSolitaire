@@ -11,13 +11,13 @@ Pyramid::Pyramid() {
     //open the logfile
     logFile.open("csc375Solitaire.txt");
     if (logFile.is_open()) {
-        logFile << "=== Pyramid Solitaire Game Started ===" << endl;
+        logFile << "---- Pyramid Solitaire Game Started ----" << endl;
     }
 }
 
 Pyramid::~Pyramid() {
     if (logFile.is_open()) {
-        logFile << "=== Game Ended ===" << endl;
+        logFile << "---- Game Ended ----" << endl;
         logFile.close();
     }
 }
@@ -37,6 +37,7 @@ void Pyramid::mainMenu() {
     cout << "To start a new game enter 'n'" << endl;
     cout << "To print current deck enter 'd'" << endl;
     cout << "To shuffle current deck enter 's'" << endl;
+    cout << "To view instuctions enter 'i'" << endl;
     cout << "To quit game enter 'q'" << endl;
     cout << "\nPlease make a selection: ";
     cin >> c;
@@ -54,6 +55,9 @@ void Pyramid::mainMenu() {
         logAction("User selected: Shuffle");
         shuffle();
         cout << "Current deck shuffled. To view enter 'd'." << endl;
+        mainMenu();
+    } else if (c == 'I' || c == 'i') {
+        help();
         mainMenu();
     } else if (c == 'Q' || c == 'q') {
         return;
@@ -418,4 +422,22 @@ void Pyramid::currentPlay() {
             cout << "Invalid command!" << endl;
         }
     }
+}
+
+void Pyramid::help() {
+    cout << "=============================================================================================================================" << endl;
+    cout << "\nThe Pyramid awaits! Here is how to play:" << endl;
+    cout << "\nThe game starts with a single card dealt facing up, and another card is dealt on each bottom corner of it." << endl;
+    cout << "This overlapping continues until the bottom row has 7 cards. The entire structure resembles a pyramid." << endl;
+    cout << "\nThe goal of the game is to eliminate the entire pyramid by making sums of 13 with the cards on the board and a stock pile." << endl;
+    cout << "Aces count as one. Jacks, queens, and kings are valued 11, 12, and 13, respectively." << endl;
+    cout << "Since the King is already 13, it does not need to be paired with another card." << endl;
+    cout << "\nIf a card pairs with that of another on board select ‘p’ and enter the row and column for each. Example: p 7 3 6 1 <enter>" << endl;
+    cout << "If there is a King (13) on the board select ‘k’ and enter the row and column.  Example: k 6 2 <enter>" << endl;
+    cout << "If there are no pairs on the board and/or the current draw card has been used select ‘d’ to draw from the stockpile." << endl;
+    cout << "If the drawn card pairs with on the board select ‘m’ and the row and column of the board card. Example: m 3 2 <enter>" << endl;
+    cout << "If the drawn card is a King (13) select ‘s’ to discard." << endl;
+    cout << "If no pairs can be made from the current draw card and/or the board select ‘n’ to discard the current card and draw a new one." << endl;
+    cout << "\nClear the Pyramid and you Win!!!" << endl;
+    cout << "\n=============================================================================================================================" << endl;
 }
