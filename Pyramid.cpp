@@ -4,8 +4,10 @@ using namespace std;
 
 Pyramid::Pyramid() {
     stockPile = nullptr;
+    discardPile = nullptr;
     hasDrawnCard = false;
     stockSize = 0;
+    discardSize = 0;
     clearBoard();
 
     //open the logfile
@@ -88,6 +90,16 @@ void Pyramid::clearBoard() {
     stockPile = nullptr;
     stockSize = 0;
 
+    //discard pile
+    current = discardPile;
+    while (current != nullptr) {
+        CardNode* next = current->next;
+        delete current;
+        current = next;
+    }
+    discardPile = nullptr;
+    discardSize = 0;
+
     currentCard.rank = 0;
     currentCard.suit = "";
     hasDrawnCard = false;
@@ -108,6 +120,15 @@ void Pyramid::addToStock(Card card) {
     stockSize++;
 }
 
+void Pyramid::addToDiscard(Card card) {
+    CardNode* newNode = new CardNode(card);
+    newNode->next = discardPile;
+    discardPile = newNode;
+    discardSize++;
+    logAction("Card added to discard pile (Rank: " + to_string(card.rank) +
+              ", Discard size: " + to_string(discardSize) + ")");
+}
+
 Card Pyramid::drawFromStockList() {
     if (stockPile == nullptr) {
         Card empty;
@@ -122,6 +143,25 @@ Card Pyramid::drawFromStockList() {
     delete temp;
     stockSize--;
     
+    return card;
+}
+
+Card Pyramid::drawFromDiscard() {
+    if (discardPile == nullptr) {
+        Card empty;
+        empty.rank = 0;
+        empty.suit = "";
+        return empty;
+    }
+
+    CardNode* temp = discardPile;
+    Card card = temp->data;
+    discardPile = discardPile->next;
+    delete temp;
+    discardSize--;
+    logAction("Card drawn from discard pile (Rank: " + to_string(card.rank) +
+              ", Discard remaining: " + to_string(discardSize) + ")");
+
     return card;
 }
 
@@ -146,6 +186,7 @@ void Pyramid::printBoard() {
     }
     
     cout << "\nStock pile: " << stockSize << " cards remaining" << endl;
+    cout << "Discard pile: " << discardSize << " cards" << endl;
     
     if (hasDrawnCard) {
         cout << "Current card: ";
@@ -300,18 +341,29 @@ bool Pyramid::hasValidMoves() {
 }
 
 void Pyramid::drawFromStock() {
-    if (stockSize == 0) {
-        cout << "Stock pile is empty!" << endl;
-        logAction("DRAW FAILED: Stock pile empty");
-        return;
-    }
-    
     if (hasDrawnCard) {
         cout << "You already have a card drawn. Use it or Discard and draw" << endl;
         logAction("DRAW FAILED: Card already drawn");
         return;
     }
-    
+
+    /* Try to draw from discard pile first
+    if (discardSize > 0) {
+        currentCard = drawFromDiscard();
+        hasDrawnCard = true;
+        cout << "Drew from discard: ";
+        printCard(currentCard);
+        cout << endl;
+        return;
+    }*/
+
+    // If discard is empty, draw from stock
+    if (stockSize == 0) {
+        cout << "Both stock and discard piles are empty!" << endl;
+        logAction("DRAW FAILED: Stock and discard piles empty");
+        return;
+    }
+
     currentCard = drawFromStockList();
     hasDrawnCard = true;
     cout << "Drew: ";
@@ -380,6 +432,7 @@ void Pyramid::currentPlay() {
                 cout << "Discarded ";
                 printCard(currentCard);
                 cout << endl;
+                addToDiscard(currentCard);
                 hasDrawnCard = false;
                 currentCard.rank = 0;
             }
@@ -397,8 +450,17 @@ void Pyramid::currentPlay() {
                 cout << "No card drawn from stock!" << endl;
             } else if (currentCard.rank == 13) {
                 cout << "King removed!" << endl;
-                hasDrawnCard = false;
-                currentCard.rank = 0;
+                logAction("SUCCESS: King removed from stock card");
+                if (discardSize > 0) {
+                    currentCard = drawFromDiscard();
+                    hasDrawnCard = true;
+                    cout << "Drew from discard: ";
+                    printCard(currentCard);
+                    cout << endl;
+                } else {
+                    hasDrawnCard = false;
+                    currentCard.rank = 0;
+                }
             } else {
                 cout << "Current stock card is not a King!" << endl;
             }
@@ -416,9 +478,19 @@ void Pyramid::currentPlay() {
                     cout << "Card is not exposed!" << endl;
                 } else if (board[r][c].rank + currentCard.rank == 13) {
                     cout << "Match! Removing cards." << endl;
+                    logAction("SUCCESSFUL MATCH: Stock card (Rank: " + to_string(currentCard.rank) +
+                             ") matched with board at (" + to_string(r+1) + "," + to_string(c+1) + ")");
                     board[r][c].rank = 0;
-                    hasDrawnCard = false;
-                    currentCard.rank = 0;
+                    if (discardSize > 0) {
+                        currentCard = drawFromDiscard();
+                        hasDrawnCard = true;
+                        cout << "Drew from discard: ";
+                        printCard(currentCard);
+                        cout << endl;
+                    } else {
+                        hasDrawnCard = false;
+                        currentCard.rank = 0;
+                    }
                 } else {
                     cout << "Cards don't add up to 13!" << endl;
                 }
